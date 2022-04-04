@@ -15,6 +15,13 @@ class threshold_env(gym.Env):
         self.buffer_intervals = buffer_intervals if buffer_intervals != None else [1]*n_agents
 
     def step(self, actions):
+        """
+        Observation space:
+            - Did transmit: {0=no, 1=yes}
+            - Transmission successful: {0=no, 1=yes}
+            - Interference-sensed: Ratio # of other transmissions / # of agents
+            - Buffer: Ratio of buffer / max_buffer, [0, 1]
+        """
         # Increment step
         self.current_step += 1
 
@@ -28,6 +35,11 @@ class threshold_env(gym.Env):
         obs = []
         rewards = []
         for i in range(self.n_agents):
+            did_transmit = (actions[i] == 1)
+            interference_sensed = n_transmissions / self.n_agents
+            buffer_ratio = self.buffers[i] / self.max_buffers[i]
+
+
             # Get reward
             if actions[i] == 1:
                 if transmissions_successful:
@@ -37,13 +49,14 @@ class threshold_env(gym.Env):
                     if self.buffers[i] < 0:
                         raise ValueError("Buffers should not be negative")
 
-                    reward = self.buffers[i] / self.max_buffers[i] # successful transmission
+                    reward = 1 # successful transmission
 
                 else:
                     reward = -1 # unsuccessful transmission
             elif actions[i] == 0:
-                reward = 1 - self.buffers[i] / self.max_buffers[i] # action = 0, no transmission
+                reward = 0 # action = 0, no transmission
             else:
+                print("Is this ever used?") # Delete this later
                 reward = 0
 
             rewards.append(reward)
@@ -53,7 +66,7 @@ class threshold_env(gym.Env):
                 self.buffers[i] += 1
 
             # Get observation
-            obs.append([actions[i], n_transmissions, self.buffers[i] / self.max_buffers[i]])
+            obs.append([int(did_transmit), int(transmissions_successful), interference_sensed, buffer_ratio])
 
         # Get "done"
         if self.current_step == self.n_steps:

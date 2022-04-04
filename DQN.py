@@ -55,7 +55,7 @@ class KerasDQN(Agent):
 
     def build_FNN_model(self):
         model = Sequential()
-        model.add(keras.Input(shape=(1, self.state_space)))
+        #model.add(keras.Input(shape=(1, self.state_space)))
 
         model.add(Dense(self.hidden_layer_one_dims, activation=relu))
         model.add(Dense(self.hidden_layer_two_dims, activation=relu))
