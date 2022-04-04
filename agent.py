@@ -52,7 +52,7 @@ while True:
   scores = [[] for _ in range(n_agents)] # is this the same as rewards?
   rewards = []
 
-  state = env.reset()
+  #state = env.reset() # If I refactor state, make this work
   state = [np.zeros(n_inputs).reshape(1, -1) for _ in range(n_agents)]
 
   # For multi-step actions
@@ -64,9 +64,8 @@ while True:
   actions_to_take = [0 for _ in range(n_agents)] # do/don't transmit on this step. In {0, 1}
   
   while True:
-    print() 
-    print("state", state)
-    # ----------------------- Get Actions ------------------------------
+    print("\nStep", stepIdx) 
+    # Get Actions ------------------------------
     for i in range(n_agents):
       # if buffer is 0 don't use RL, also don't save if no RL was used
       if state[i][0][-1] == 0:
@@ -78,7 +77,7 @@ while True:
       elif action_duration[i] == 0: # make sure this can't be negative
         # Get action, save state, set future actions, and action_duration
         agent_action = agents[i].choose_action(state[i])
-        print("agent", i, "action", agent_action)
+        #print("agent", i, "action", agent_action)
 
         state_at_action[i] = state[i]
 
@@ -102,14 +101,13 @@ while True:
 
     # Take an environment step
     next_state, reward, done, info = env.step(actions_to_take)
-    print("next_state", next_state)
     next_state = state_to_observations(next_state)
-    """
+    print("state", state)
+    print("actions to take", actions_to_take)
     print("next_state", next_state)
     print("reward", reward)
     print("done", done)
     print("info", info)
-    """
 
     # Decrement all action durations
     action_duration = [duration - 1 for duration in action_duration]

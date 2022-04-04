@@ -26,23 +26,26 @@ class threshold_env(gym.Env):
         self.current_step += 1
 
         n_transmissions = actions.count(1)
-        if n_transmissions <= self.threshold:
-            transmissions_successful = True
-        else:
-            transmissions_successful = False
 
         # Get reward, observation, and decrement and/or increment buffers
         obs = []
         rewards = []
         for i in range(self.n_agents):
             did_transmit = (actions[i] == 1)
+            if did_transmit:
+                if (1 <= n_transmissions) and (n_transmissions <= self.threshold):
+                    transmission_successful = True
+                else:
+                    transmission_successful =  False
+            else:
+                transmission_successful = False
             interference_sensed = n_transmissions / self.n_agents
             buffer_ratio = self.buffers[i] / self.max_buffers[i]
 
 
             # Get reward
             if actions[i] == 1:
-                if transmissions_successful:
+                if transmission_successful:
                     # Decrement buffer
                     self.buffers[i] -= 1
 
@@ -66,7 +69,7 @@ class threshold_env(gym.Env):
                 self.buffers[i] += 1
 
             # Get observation
-            obs.append([int(did_transmit), int(transmissions_successful), interference_sensed, buffer_ratio])
+            obs.append([int(did_transmit), int(transmission_successful), interference_sensed, buffer_ratio])
 
         # Get "done"
         if self.current_step == self.n_steps:
@@ -82,6 +85,6 @@ class threshold_env(gym.Env):
 
     def reset(self):
         self.current_step = 0
-        self.buffers = [0] * self.n_agents
-        starting_obs = [0] * (3 * self.n_agents)
+        self.buffers = [1] * self.n_agents
+        starting_obs = [0] * (4 * self.n_agents)
         return starting_obs
