@@ -9,26 +9,18 @@ import csv
 
 # --------------------> Parameters <--------------------
 save = True # Save data to CSV
+save_data_path = "./data/"
 n_iterations = 1 # How many full simulations to run
 # ------------------------------------------------------------
 
 # --------------------- Create Env ---------------------
 n_agents = 2
 threshold = 1
-n_steps = 1e1
-env = threshold_env(n_agents, threshold, n_steps)
+n_steps = 1e4
+transmit_and_sense = False
+env = threshold_env(n_agents, threshold, n_steps, transmit_and_sense=transmit_and_sense)
 # ------------------------------------------------------
 
-# --------------------- Create Agents ---------------------
-n_inputs = 4
-n_actions = 3
-# DQN
-agents = [KerasDQN(n_inputs, n_actions,
-                   hidden_layer_one_dims=128,
-                   hidden_layer_two_dims=256,
-                   batch_size=64,
-                   epsilon_min=0.05) for _ in range(n_agents)]
-# ------------------------------------------------------
 
 def state_to_observations(state):
     """
@@ -45,6 +37,17 @@ def state_to_observations(state):
 # ---------------------- Training Loop --------------------
 currIt = 0
 while True:
+  # --------------------- Create Agents ---------------------
+  n_inputs = 4
+  n_actions = 3
+  # DQN
+  agents = [KerasDQN(n_inputs, n_actions,
+                    hidden_layer_one_dims=128,
+                    hidden_layer_two_dims=256,
+                    batch_size=64,
+                    epsilon_min=0.05) for _ in range(n_agents)]
+  # ------------------------------------------------------
+
   stepIdx = 0
   rewards = []
   action_list = []
@@ -52,7 +55,7 @@ while True:
   scores = [[] for _ in range(n_agents)] # is this the same as rewards?
   rewards = []
 
-  #state = env.reset() # If I refactor state, make this work
+  state = env.reset() # If I refactor state, make this work
   state = [np.zeros(n_inputs).reshape(1, -1) for _ in range(n_agents)]
 
   # For multi-step actions
@@ -64,7 +67,7 @@ while True:
   actions_to_take = [0 for _ in range(n_agents)] # do/don't transmit on this step. In {0, 1}
   
   while True:
-    print("\nStep", stepIdx) 
+    #print("\nStep", stepIdx) 
     # Get Actions ------------------------------
     for i in range(n_agents):
       # if buffer is 0 don't use RL, also don't save if no RL was used
@@ -102,12 +105,14 @@ while True:
     # Take an environment step
     next_state, reward, done, info = env.step(actions_to_take)
     next_state = state_to_observations(next_state)
+    """
     print("state", state)
     print("actions to take", actions_to_take)
     print("next_state", next_state)
     print("reward", reward)
     print("done", done)
     print("info", info)
+    """
 
     # Decrement all action durations
     action_duration = [duration - 1 for duration in action_duration]
@@ -171,7 +176,7 @@ while True:
       # Record data in CSV
       if save == True:
         data = [list(reward) + list(action) + list(np.array(state).flatten()) for reward, action, state in zip(rewards, action_list, states)]
-        with open("data" + ".csv", "w", newline="") as f:
+        with open(save_data_path + "data" + str(currIt) + ".csv", "w", newline="") as f:
           writer = csv.writer(f)
           writer.writerows(data)
       break
