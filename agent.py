@@ -8,16 +8,16 @@ import numpy as np
 import csv
 
 # --------------------> Parameters <--------------------
-save = False # Save data to CSV
+save = True # Save data to CSV
 save_data_path = "./data/"
 n_iterations = 1 # How many full simulations to run
-feature_histories = 2
+feature_histories = 3
 # ------------------------------------------------------------
 
 # --------------------- Create Env ---------------------
 n_agents = 3
 threshold = 1
-n_steps = 1e1
+n_steps = 1e4
 transmit_and_sense = False
 env = threshold_env(n_agents, threshold, n_steps, transmit_and_sense=transmit_and_sense)
 # ------------------------------------------------------
