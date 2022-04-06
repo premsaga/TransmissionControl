@@ -8,15 +8,16 @@ import numpy as np
 import csv
 
 # --------------------> Parameters <--------------------
-save = True # Save data to CSV
+save = False # Save data to CSV
 save_data_path = "./data/"
 n_iterations = 1 # How many full simulations to run
+feature_histories = 2
 # ------------------------------------------------------------
 
 # --------------------- Create Env ---------------------
-n_agents = 2
+n_agents = 3
 threshold = 1
-n_steps = 1e4
+n_steps = 1e1
 transmit_and_sense = False
 env = threshold_env(n_agents, threshold, n_steps, transmit_and_sense=transmit_and_sense)
 # ------------------------------------------------------
@@ -31,14 +32,16 @@ def state_to_observations(state):
         - list of lists of observations for each agent
     """
     n_obs_per_agent = len(state) // n_agents
+    print("n_obs_per_agent", n_obs_per_agent)
     agent_obs = [np.array(state[i * n_obs_per_agent: (i + 1) * n_obs_per_agent]).reshape(1, -1) for i in range(n_agents)]
+
     return agent_obs
 
 # ---------------------- Training Loop --------------------
 currIt = 0
 while True:
   # --------------------- Create Agents ---------------------
-  n_inputs = 4
+  n_inputs = 4 * feature_histories 
   n_actions = 3
   # DQN
   agents = [KerasDQN(n_inputs, n_actions,
@@ -57,6 +60,8 @@ while True:
 
   state = env.reset() # If I refactor state, make this work
   state = [np.zeros(n_inputs).reshape(1, -1) for _ in range(n_agents)]
+  next_state = [np.zeros(n_inputs).reshape(1, -1) for _ in range(n_agents)]
+  print("starting next state", next_state)
 
   # For multi-step actions
   state_at_action = [np.zeros(n_inputs).reshape(1, -1) for _ in range(n_agents)]
@@ -103,8 +108,19 @@ while True:
     # -------------------------------------------------------------------
 
     # Take an environment step
-    next_state, reward, done, info = env.step(actions_to_take)
-    next_state = state_to_observations(next_state)
+    new_state_info, reward, done, info = env.step(actions_to_take)
+
+    # Feature history stuff (testing)
+    for i in range(n_agents):
+      # Shift elements to the left
+      for j in range(len(next_state[i][0]) - len(new_state_info[i])):
+        next_state[i][0][j] = next_state[i][0][j + len(new_state_info[i])]
+      
+      # Add new state information to the end of the list
+      for k in range(len(new_state_info[i])):
+        next_state[i][0][-1 * len(new_state_info[i]) + k] = new_state_info[i][k]
+
+    #next_state = state_to_observations(next_state)
     """
     print("state", state)
     print("actions to take", actions_to_take)
