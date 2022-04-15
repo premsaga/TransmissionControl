@@ -6,12 +6,24 @@ from custom_env import threshold_env
 from DQN import KerasDQN
 import numpy as np
 import csv
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("n_agents", type=int)
+parser.add_argument("n_actions", type=int)
+parser.add_argument("threshold", help="How many agents can successfully transmit at the same time", type=int)
+parser.add_argument("feature_histories", help="Use information from the past x steps as features", type=int)
+parser.add_argument("save_data_path", type=str)
+args = parser.parse_args()
+
+n_agents = args.n_agents
+n_actions = args.n_actions
+threshold = args. threshold
+feature_histories = args.feature_histories
 
 # --------------------> Parameters <--------------------
 save = True # Save data to CSV
-save_data_path = "./data/"
 n_iterations = 1 # How many full simulations to run
-feature_histories = 1
 # ------------------------------------------------------------
 
 # --------------------- Create Env ---------------------
