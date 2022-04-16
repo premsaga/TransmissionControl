@@ -20,6 +20,7 @@ n_agents = args.n_agents
 n_actions = args.n_actions
 threshold = args. threshold
 feature_histories = args.feature_histories
+save_data_path = args.save_data_path
 
 # --------------------> Parameters <--------------------
 save = True # Save data to CSV
@@ -27,9 +28,7 @@ n_iterations = 1 # How many full simulations to run
 # ------------------------------------------------------------
 
 # --------------------- Create Env ---------------------
-n_agents = 4
-threshold = 1
-n_steps = 1e4  
+n_steps = 1e4 
 transmit_and_sense = False
 env = threshold_env(n_agents, threshold, n_steps, transmit_and_sense=transmit_and_sense)
 # ------------------------------------------------------

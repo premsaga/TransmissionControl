@@ -1,31 +1,39 @@
-# Define run parameters that define an experiment
-n_agents=(4 4)
-n_actions=(5 5)
-threshold=(1 1)
+# Set parameters that define an experiment
+# Think of the columns of the arrays defining an experiment
+# I.e., define an experiment along the same array index
+n_agents=(3 4)
+n_actions=(4 5)
+threshold=(1 2)
 feature_histories=(1 1)
-
-for str in ${n_agents[@]}; do
-  echo $str
-done
 
 # How many times to run each experiment
 n_runs=(1 2)
 
 # Loop through experiments
 for i in ${!n_runs[@]}; do
-  echo "element $i is ${n_runs[$i]}"
   # Create folder for experiment (if it doesn't exit)
-  experiment_folder="$n_agents""agents_""$n_actions""actions_""$threshold""threshold_"
-  experiment_folder="$experiment_folder""$feature_histories""history"
-  experiment_folder="$experiment_folder""TEST"
-  echo $experiment_folder
-  
+  experiment_folder="./data/""${n_agents[i]}""agents_""${n_actions[i]}""actions_""${threshold[i]}""threshold_"
+  experiment_folder="$experiment_folder""${feature_histories[i]}""history"
+
+  # Create folder for individual run, could change to data file
+  run_number=1
+  full_dir="$experiment_folder""/run""$run_number""/"
+  while [ -d "$full_dir" ]
+  do
+    let run_number+=1 
+    full_dir="$experiment_folder""/run""$run_number""/"
+  done
 
   # Loop through individual runs
+  for ((j = 1 ; j <= ${n_runs[$i]} ; j++)); do
+    # Create folder for run
+    mkdir -p ./$full_dir
 
-  # Create folders
-  # Run
+    # Run
+    python argparse_agent.py ${n_agents[$i]} ${n_actions[$i]} ${threshold[$i]} ${feature_histories[$i]} $full_dir
+
+    # Update new directory
+    let run_number+=1
+    full_dir="$experiment_folder""/run""$run_number""/"
+  done 
 done
-
-mkdir -p ./temp
-mkdir -p ./$experiment_folder

@@ -10,17 +10,17 @@ import csv
 # --------------------> Parameters <--------------------
 save = True # Save data to CSV
 save_data_path = "./data/"
-n_iterations = 1 # How many full simulations to run
+n_iterations = 5 # How many full simulations to run
 feature_histories = 1
 # ------------------------------------------------------------
 
 # --------------------- Create Env ---------------------
 n_agents = 4
-threshold = 1
+threshold = 2 
 n_steps = 1e4  
 transmit_and_sense = False
 env = threshold_env(n_agents, threshold, n_steps, transmit_and_sense=transmit_and_sense)
-# ------------------------------------------------------
+# -----------------------------------------------------
 
 
 def state_to_observations(state):
@@ -42,7 +42,7 @@ currIt = 0
 while True:
   # --------------------- Create Agents ---------------------
   n_inputs = 4 * feature_histories 
-  n_actions = 5
+  n_actions = 2
   # DQN
   agents = [KerasDQN(n_inputs, n_actions,
                     hidden_layer_one_dims=128,

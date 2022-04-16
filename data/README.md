@@ -14,5 +14,3 @@ Data:
 - run11: 4, agents, 5 actions, history = 3, transmit_and_sense=false (testing feature histories)
 - run12: Same as runs 8 and 10, 10k steps, history=1
 
-Prem data:
-- 4
