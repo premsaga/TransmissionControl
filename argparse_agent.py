@@ -110,6 +110,12 @@ while True:
           future_actions[i] = [0, 0, 1]
         elif agent_action == 4:
           future_actions[i] = [0, 0, 0, 1]
+        elif agent_action == 5:
+          future_actions[i] = [0, 0, 0, 0, 1]
+        elif agent_action == 6:
+          future_actions[i] = [0, 0, 0, 0, 0, 1]
+        elif agent_action == 7:
+          future_actions[i] = [0, 0, 0, 0, 0, 0, 1]
         else:
           raise ValueError
 
