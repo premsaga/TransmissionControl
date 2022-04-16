@@ -53,7 +53,6 @@ currIt = 0
 while True:
   # --------------------- Create Agents ---------------------
   n_inputs = 4 * feature_histories 
-  n_actions = 5
   # DQN
   agents = [KerasDQN(n_inputs, n_actions,
                     hidden_layer_one_dims=128,
