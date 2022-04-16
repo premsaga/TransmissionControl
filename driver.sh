@@ -1,13 +1,13 @@
 # Set parameters that define an experiment
 # Think of the columns of the arrays defining an experiment
 # I.e., define an experiment along the same array index
-n_agents=(3 4)
-n_actions=(4 5)
-threshold=(1 2)
-feature_histories=(1 1)
+n_agents=(4 4 4 4 4 4)
+n_actions=(3 4 5 6 7 8)
+threshold=(2 2 2 2 2 2)
+feature_histories=(1 1 1 1 1 1)
 
 # How many times to run each experiment
-n_runs=(1 2)
+n_runs=(3 3 3 3 3 3)
 
 # Loop through experiments
 for i in ${!n_runs[@]}; do
